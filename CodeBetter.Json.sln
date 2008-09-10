@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C90F55B7-A624-4967-BC05-98AD12306371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeBetter.Json.CF", "CodeBetter.Json.CF\CodeBetter.Json.CF.csproj", "{8FA552DE-9A01-49D5-B58B-6104269E80E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeBetter.Json", "CodeBetter.Json\CodeBetter.Json.csproj", "{EA9357C8-CA63-4B67-9F5C-7C3923318F36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeBetter.Json.Test.ConsoleClient", "CodeBetter.Json.Test.ConsoleClient\CodeBetter.Json.Test.ConsoleClient.csproj", "{64E3F1C6-A087-453C-957C-608842DC9BDE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EAA42757-9278-4B57-AD20-A15DEF1CE3FB}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.txt = ReadMe.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8FA552DE-9A01-49D5-B58B-6104269E80E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FA552DE-9A01-49D5-B58B-6104269E80E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FA552DE-9A01-49D5-B58B-6104269E80E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FA552DE-9A01-49D5-B58B-6104269E80E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA9357C8-CA63-4B67-9F5C-7C3923318F36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9357C8-CA63-4B67-9F5C-7C3923318F36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9357C8-CA63-4B67-9F5C-7C3923318F36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9357C8-CA63-4B67-9F5C-7C3923318F36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64E3F1C6-A087-453C-957C-608842DC9BDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64E3F1C6-A087-453C-957C-608842DC9BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64E3F1C6-A087-453C-957C-608842DC9BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64E3F1C6-A087-453C-957C-608842DC9BDE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{64E3F1C6-A087-453C-957C-608842DC9BDE} = {C90F55B7-A624-4967-BC05-98AD12306371}
+	EndGlobalSection
+EndGlobal
