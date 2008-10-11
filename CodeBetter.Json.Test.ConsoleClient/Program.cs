@@ -7,7 +7,7 @@ namespace CodeBetter.Json.Test.Console
         private static void Main(string[] args)
         {            
             string json = Converter.Serialize(new User("name", "password", AccountStatus.Enabled));
-            Converter.Serialize("out.txt", new int[] { 1, 2, 3, 4 }, "_");
+            Converter.Serialize("out.txt", new int[] { 1, 2, 3, -4 }, "_");
             Console.WriteLine(json);
 
 

@@ -30,7 +30,7 @@
         }
         public virtual int ReadInt32()
         {
-            string value = ReadNonStringValue('0');
+            string value = ReadNumericValue();
             return value == null ? 0 : Convert.ToInt32(value);
         }
         public virtual string ReadString()
@@ -64,7 +64,7 @@
         }
         public virtual double ReadDouble()
         {
-            string value = ReadNonStringValue('0');            
+            string value = ReadNumericValue();            
             return value == null ? 0 : Convert.ToDouble(value);
         }
         public virtual DateTime ReadDateTime()
@@ -91,22 +91,22 @@
         }
         public virtual long ReadInt64()
         {
-            string value = ReadNonStringValue('0');
+            string value = ReadNumericValue();
             return value == null ? 0 : Convert.ToInt64(value);
         }
         public virtual float ReadFloat()
         {
-            string value = ReadNonStringValue('0');
+            string value = ReadNumericValue();
             return value == null ? 0 : Convert.ToSingle(value);
         }
         public virtual short ReadInt16()
         {
-            string value = ReadNonStringValue('0');
+            string value = ReadNumericValue();
             return value == null ? (short)0 : Convert.ToInt16(value);
         }
-        public virtual string ReadNonStringValue()
+        public virtual string ReadNumericValue()
         {
-            return ReadNonStringValue((char)0);
+            return ReadNonStringValue('0');
         }
         public virtual string ReadNonStringValue(char offset)
         {
@@ -118,7 +118,15 @@
                 {
                     break;
                 }
-                sb.Append(_reader.Read() - offset);
+                int read = _reader.Read();
+                if (read >= '0' && read <= '9')
+                {
+                    sb.Append(read - offset);
+                }
+                else
+                {
+                    sb.Append((char) read);
+                }                
             }
             string str = sb.ToString();
             return str == "null" ? null : str;
