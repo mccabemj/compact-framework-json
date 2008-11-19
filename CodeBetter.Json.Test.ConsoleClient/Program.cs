@@ -34,6 +34,7 @@ namespace CodeBetter.Json.Test.Console
         private readonly Role _role;
         private AccountStatus _status;    
         private Thing _think = new Thing();
+        private bool _enabled = true;
 
         public string UserName
         {

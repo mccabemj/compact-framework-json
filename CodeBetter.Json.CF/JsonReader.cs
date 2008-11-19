@@ -94,6 +94,15 @@
             string value = ReadNumericValue();
             return value == null ? 0 : Convert.ToInt64(value);
         }
+        public virtual bool ReadBool()
+        {
+            string str = ReadNonStringValue('0');
+            if (str == null) return false;
+            if (str.Equals("true")) return true;
+            if (str.Equals("false")) return false;
+            throw new JsonException("Expecting true or false, but got " + str);
+        }
+
         public virtual float ReadFloat()
         {
             string value = ReadNumericValue();

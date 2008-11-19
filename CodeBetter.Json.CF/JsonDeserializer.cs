@@ -58,6 +58,10 @@
             {
                 return _reader.ReadChar();
             }
+            if (type == typeof(bool))
+            {
+                return _reader.ReadBool();
+            }
             if (type.IsEnum)
             {
                 return _reader.ReadEnum();
