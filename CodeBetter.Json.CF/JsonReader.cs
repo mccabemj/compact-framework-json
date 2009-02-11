@@ -30,7 +30,7 @@
         }
         public virtual int ReadInt32()
         {
-            string value = ReadNumericValue();
+            var value = ReadNumericValue();
             return value == null ? 0 : Convert.ToInt32(value);
         }
         public virtual string ReadString()
@@ -85,9 +85,9 @@
             }                        
             return str[0];
         }
-        public virtual int ReadEnum()
+        public virtual object ReadEnum(Type type)
         {
-            return ReadInt32();            
+            return Enum.Parse(type, ReadInt64().ToString(), false);
         }
         public virtual long ReadInt64()
         {

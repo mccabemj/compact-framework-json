@@ -64,7 +64,7 @@
             }
             if (type.IsEnum)
             {
-                return _reader.ReadEnum();
+                return _reader.ReadEnum(type);
             }
             if (type == typeof(long))
             {

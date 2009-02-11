@@ -6,7 +6,7 @@ namespace CodeBetter.Json.Test.Console
     {
         private static void Main(string[] args)
         {            
-            string json = Converter.Serialize(new User("name", "password", AccountStatus.Enabled));
+            string json = Converter.Serialize(new User("name", "password", AccountStatus.Disabled));
             Converter.Serialize("out.txt", new int[] { 1, 2, 3, -4 }, "_");
             Console.WriteLine(json);
 
@@ -105,7 +105,7 @@ namespace CodeBetter.Json.Test.Console
         }
     }
 
-    public enum AccountStatus
+    public enum AccountStatus : long
     {
         Enabled = 1,
         Disabled = 2,
