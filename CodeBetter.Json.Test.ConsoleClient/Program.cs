@@ -6,17 +6,26 @@ namespace CodeBetter.Json.Test.Console
     {
         private static void Main(string[] args)
         {            
-            string json = Converter.Serialize(new User("name", "password", AccountStatus.Disabled));
-            Converter.Serialize("out.txt", new int[] { 1, 2, 3, -4 }, "_");
+            var json = Converter.Serialize(new User("name", "password", AccountStatus.Disabled), "_", ProcessValue);
+            Converter.Serialize("out.txt", new[] { 1, 2, 3, -4 }, "_");
             Console.WriteLine(json);
 
 
-            User user = Converter.Deserialize<User>(json, "_");
-            int[] values = Converter.DeserializeFromFile<int[]>("out.txt", "_");
+            var user = Converter.Deserialize<User>(json, "_");
+            var values = Converter.DeserializeFromFile<int[]>("out.txt", "_");
             Console.WriteLine(user.UserName);
             
             Console.WriteLine("Done. Press enter to exit");
             Console.ReadLine();
+        }
+        
+        private static object ProcessValue(string name, object value)
+        {
+            if (string.Compare(name, "password") == 0)
+            {
+                return "secret";
+            }
+            return value;
         }
     }
 

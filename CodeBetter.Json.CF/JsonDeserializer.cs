@@ -93,15 +93,22 @@
             var itemType = ListHelper.GetListItemType(listType);
             bool isReadonly;
             var container = ListHelper.CreateContainer(listType, itemType, out isReadonly);
+            
+            _reader.SkipWhiteSpaces();            
+            if (_reader.Peek() == JsonTokens.EndArrayCharacter)
+            {
+                return container;
+            }
+            
             while(true)
             {
-                _reader.SkipWhiteSpaces();
+                
                 container.Add(DeserializeValue(itemType));
-                _reader.SkipWhiteSpaces();                
+                _reader.SkipWhiteSpaces();
                 if (_reader.AssertNextIsDelimiterOrSeparator(JsonTokens.EndArrayCharacter))
                 {
                     break;
-                }                
+                }                           
             }
             if (listType.IsArray)
             {

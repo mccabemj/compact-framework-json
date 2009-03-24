@@ -2,7 +2,8 @@
 {
     using System.Globalization;
     using System.IO;
-
+    
+    
     public class Converter
     {
         public static void Serialize(Stream output, object instance)
@@ -29,7 +30,7 @@
         public static string Serialize(object instance)
         {
             return Serialize(instance, string.Empty);
-        }
+        }      
         public static string Serialize(object instance, string fieldPrefix)
         {
             using (var sw = new StringWriter(CultureInfo.InvariantCulture))
@@ -39,6 +40,43 @@
                 return sw.ToString();
             }               
         }
+
+        public static void Serialize(Stream output, object instance, PreFieldSerializingDelegate callback)
+        {
+            Serialize(output, instance, string.Empty);
+        }
+        public static void Serialize(Stream output, object instance, string fieldPrefix, PreFieldSerializingDelegate callback)
+        {
+            var writer = new JsonWriter(output);
+            JsonSerializer.Serialize(writer, instance, fieldPrefix, callback);
+            writer.Flush();
+        }
+        public static void Serialize(string file, object instance, PreFieldSerializingDelegate callback)
+        {
+            Serialize(file, instance, string.Empty, callback);
+        }
+        public static void Serialize(string file, object instance, string fieldPrefix, PreFieldSerializingDelegate callback)
+        {
+            using (var writer = new JsonWriter(file))
+            {
+                JsonSerializer.Serialize(writer, instance, fieldPrefix, callback);
+            }
+        }
+        public static string Serialize(object instance, PreFieldSerializingDelegate callback)
+        {
+            return Serialize(instance, string.Empty, callback);
+        }
+        public static string Serialize(object instance, string fieldPrefix, PreFieldSerializingDelegate callback)
+        {
+            using (var sw = new StringWriter(CultureInfo.InvariantCulture))
+            using (var writer = new JsonWriter(sw))
+            {
+                JsonSerializer.Serialize(writer, instance, fieldPrefix, callback);
+                return sw.ToString();
+            }
+        }
+        
+        
 
         public static T Deserialize<T>(Stream input)
         {

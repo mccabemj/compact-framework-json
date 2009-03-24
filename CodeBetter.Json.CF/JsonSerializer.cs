@@ -5,21 +5,25 @@
     using System.Reflection;
     using Helpers;
 
+    public delegate object PreFieldSerializingDelegate(string name, object value);
+    
     public class JsonSerializer
     {
         //private readonly StringBuilder _builder;
         private readonly JsonWriter _writer;
         private readonly string _fieldPrefix;
-        private ArrayList _currentGraph;        
+        private ArrayList _currentGraph;
+        private readonly PreFieldSerializingDelegate _callback;
 
-        public JsonSerializer(JsonWriter writer) : this(writer, string.Empty)
+        public JsonSerializer(JsonWriter writer, PreFieldSerializingDelegate callback) : this(writer, string.Empty, callback)
         {
         }
-        public JsonSerializer(JsonWriter writer, string fieldPrefix)
+        public JsonSerializer(JsonWriter writer, string fieldPrefix, PreFieldSerializingDelegate callback)
         {
             _writer = writer;
             _currentGraph = new ArrayList(0);
-            _fieldPrefix = fieldPrefix;   
+            _fieldPrefix = fieldPrefix;
+            _callback = callback;
         }
         
         public static void Serialize(JsonWriter writer, object instance)
@@ -28,11 +32,23 @@
         }
         public static void Serialize(JsonWriter writer, object instance, string fieldPrefix)
         {
-            new JsonSerializer(writer, fieldPrefix).SerializeValue(instance);
+            Serialize(writer, instance, fieldPrefix, null);            
+        }
+        public static void Serialize(JsonWriter writer, object instance, PreFieldSerializingDelegate callback)
+        {
+            Serialize(writer, instance, string.Empty, callback);
+        }
+        public static void Serialize(JsonWriter writer, object instance, string fieldPrefix, PreFieldSerializingDelegate callback)
+        {
+            new JsonSerializer(writer, fieldPrefix, callback).SerializeValue("root", instance);
         }
         
-        private void SerializeValue(object value)
+        private void SerializeValue(string name, object value)
         {
+            if (_callback != null)
+            {
+                value = _callback(name, value);
+            }
             if (value == null)
             {
                 _writer.WriteNull();
@@ -116,15 +132,16 @@
         private void SerializeEnumerable(IEnumerable value)
         {
             var enumerator = value.GetEnumerator();
-            _writer.BeginArray();            
+            _writer.BeginArray();
+            var index = 0;        
             if (enumerator.MoveNext())
             {
-                SerializeValue(enumerator.Current);
+                SerializeValue((index++).ToString(), enumerator.Current);
             }
             while (enumerator.MoveNext())
             {
                 _writer.SeparateElements();
-                SerializeValue(enumerator.Current);
+                SerializeValue((index++).ToString(), enumerator.Current);
             }            
             _writer.EndArray();
         }
@@ -152,7 +169,7 @@
                 _writer.NewLine();
             }
             _writer.WriteKey(key);
-            SerializeValue(value);
+            SerializeValue(key, value);
         }
     }
 }
