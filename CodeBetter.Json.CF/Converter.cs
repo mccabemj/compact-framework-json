@@ -11,10 +11,9 @@
         }
         public static void Serialize(Stream output, object instance, string fieldPrefix)
         {
-            using (var writer = new JsonWriter(output))
-            {
-                JsonSerializer.Serialize(writer, instance, fieldPrefix);
-            }   
+            var writer = new JsonWriter(output);
+            JsonSerializer.Serialize(writer, instance, fieldPrefix);
+            writer.Flush();
         }
         public static void Serialize(string file, object instance)
         {
