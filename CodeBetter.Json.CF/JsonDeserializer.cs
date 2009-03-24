@@ -9,7 +9,7 @@
 
     public class JsonDeserializer
     {
-        private static readonly Type _IListType = typeof(IList);
+        private static readonly Type _IEnumerableType = typeof(IEnumerable);
         private readonly JsonReader _reader;
         private readonly string _fieldPrefix;
 
@@ -33,10 +33,16 @@
 
         private object DeserializeValue(Type type)
         {
-            _reader.SkipWhiteSpaces();            
+            _reader.SkipWhiteSpaces();
+            var isNullable = false;
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                isNullable = true;
+                type = Nullable.GetUnderlyingType(type);
+            }       
             if (type == typeof(int))
             {
-                return _reader.ReadInt32();                
+                return _reader.ReadInt32(isNullable);                
             }
             if (type == typeof(string))
             {
@@ -44,13 +50,13 @@
             }
             if (type == typeof(double))
             {
-                return _reader.ReadDouble();
+                return _reader.ReadDouble(isNullable);
             }
             if (type == typeof(DateTime))
             {
-                return _reader.ReadDateTime();
+                return _reader.ReadDateTime(isNullable);
             }
-            if (_IListType.IsAssignableFrom(type))
+            if (_IEnumerableType.IsAssignableFrom(type))
             {
                 return DeserializeList(type);
             }            
@@ -60,7 +66,7 @@
             }
             if (type == typeof(bool))
             {
-                return _reader.ReadBool();
+                return _reader.ReadBool(isNullable);
             }
             if (type.IsEnum)
             {
@@ -68,25 +74,25 @@
             }
             if (type == typeof(long))
             {
-                return _reader.ReadInt64();
+                return _reader.ReadInt64(isNullable);
             }        
             if (type == typeof(float))
             {
-                return _reader.ReadFloat();
+                return _reader.ReadFloat(isNullable);
             }
             if (type == typeof(short))
             {
-                return _reader.ReadInt16();
-            }
+                return _reader.ReadInt16(isNullable);
+            }            
             return ParseObject(type);            
         }
         private object DeserializeList(Type listType)
         {
             _reader.SkipWhiteSpaces();
             _reader.AssertAndConsume(JsonTokens.StartArrayCharacter);            
-            Type itemType = ListHelper.GetListItemType(listType);
+            var itemType = ListHelper.GetListItemType(listType);
             bool isReadonly;
-            IList container = ListHelper.CreateContainer(listType, itemType, out isReadonly);
+            var container = ListHelper.CreateContainer(listType, itemType, out isReadonly);
             while(true)
             {
                 _reader.SkipWhiteSpaces();
@@ -110,17 +116,17 @@
         private object ParseObject(Type type)
         {           
             _reader.AssertAndConsume(JsonTokens.StartObjectLiteralCharacter);
-            ConstructorInfo constructor = ReflectionHelper.GetDefaultConstructor(type);
-            object instance = constructor.Invoke(null);
+            var constructor = ReflectionHelper.GetDefaultConstructor(type);
+            var instance = constructor.Invoke(null);
             while (true)
             {
                 _reader.SkipWhiteSpaces();
-                string name = _reader.ReadString();
+                var name = _reader.ReadString();
                 if (!name.StartsWith(_fieldPrefix))
                 {
                     name = _fieldPrefix + name;
                 }
-                FieldInfo field = ReflectionHelper.FindField(type, name);
+                var field = ReflectionHelper.FindField(type, name);
                 _reader.SkipWhiteSpaces();
                 _reader.AssertAndConsume(JsonTokens.PairSeparator);                
                 _reader.SkipWhiteSpaces();

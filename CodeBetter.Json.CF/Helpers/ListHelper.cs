@@ -25,7 +25,7 @@ namespace CodeBetter.Json.Helpers
         }
         public static Array ToArray(List<object> container, Type itemType)
         {
-            Array array = Array.CreateInstance(itemType, container.Count);
+            var array = Array.CreateInstance(itemType, container.Count);
             Array.Copy(container.ToArray(), 0, array, 0, container.Count);
             return array;
         }
@@ -36,6 +36,10 @@ namespace CodeBetter.Json.Helpers
             {
                 return new List<object>();
             }
+            if (listType.IsInterface)
+            {
+                return (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(listItemType));
+            }
             if (listType.GetConstructor(BindingFlags.Instance | BindingFlags.Public, null, new Type[0], null) != null)
             {
                 return (IList)Activator.CreateInstance(listType);
@@ -45,6 +49,7 @@ namespace CodeBetter.Json.Helpers
                 isReadOnly = true;
                 return (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(listItemType));
             }
+            
             return new List<object>();
         }
     }

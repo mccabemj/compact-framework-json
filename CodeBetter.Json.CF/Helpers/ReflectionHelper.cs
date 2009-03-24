@@ -8,6 +8,7 @@ namespace CodeBetter.Json.Helpers
     {
         private readonly static Type _includeBaseAttributeType = typeof (SerializeIncludingBaseAttribute);
         private static readonly Type _nonSerializableAttributeType = typeof(NonSerializedAttribute);
+        private static readonly Type _nullableType = typeof (Nullable<>);
 
         public static List<FieldInfo> GetSerializableFields(Type type)
         {
@@ -59,7 +60,12 @@ namespace CodeBetter.Json.Helpers
         public static object GetValue(FieldInfo field, object @object)
         {
             var value = field.GetValue(@object);
-            return field.FieldType.IsEnum ? int.Parse(((Enum)value).ToString("d")) : value;
+            var isEnum = field.FieldType.IsEnum;
+            if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == _nullableType && value != null)
+            {
+                isEnum = Nullable.GetUnderlyingType(field.FieldType).IsEnum;               
+            }
+            return isEnum && value != null ? int.Parse(((Enum)value).ToString("d")) : value;
         }
 
         public static ConstructorInfo GetDefaultConstructor(Type type)

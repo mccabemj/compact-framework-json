@@ -20,7 +20,7 @@
         {            
             while(true)
             {
-                char c = Peek();
+                var c = Peek();
                 if (!char.IsWhiteSpace(c))
                 {
                     break;
@@ -28,20 +28,25 @@
                 _reader.Read();
             }
         }
-        public virtual int ReadInt32()
+        public virtual int? ReadInt32(bool isNullable)
         {
             var value = ReadNumericValue();
-            return value == null ? 0 : Convert.ToInt32(value);
+            return value == null ? (isNullable ? null : (int?)0) : Convert.ToInt32(value);
         }
         public virtual string ReadString()
         {
-            AssertAndConsume(JsonTokens.StringDelimiter);            
-            StringBuilder sb = new StringBuilder(25);
-            bool isEscaped = false;
+            if (Peek() != JsonTokens.StringDelimiter)
+            {
+                AssertAndConsumeNull();
+                return null;   
+            }
+            Read(); //we know this is a StringDelimiter      
+            var sb = new StringBuilder(25);
+            var isEscaped = false;
 
             while(true)
             {
-                char c = Read();
+                var c = Read();
                 if (c == '\\' && !isEscaped)
                 {
                     isEscaped = true;
@@ -59,22 +64,22 @@
                 }
                 sb.Append(c);
             }            
-            string str = sb.ToString();
+            var str = sb.ToString();
             return str == "null" ? null : str;
         }
-        public virtual double ReadDouble()
+        public virtual double? ReadDouble(bool isNullable)
         {
-            string value = ReadNumericValue();            
-            return value == null ? 0 : Convert.ToDouble(value);
+            var value = ReadNumericValue();
+            return value == null ? (isNullable ? null : (double?)0) : Convert.ToDouble(value);
         }
-        public virtual DateTime ReadDateTime()
+        public virtual DateTime? ReadDateTime(bool isNullable)
         {
-            string str = ReadString();
-            return str == null ? DateTime.MinValue : DateTime.ParseExact(str, "G", CultureInfo.InvariantCulture);
+            var str = ReadString();
+            return str == null ? (isNullable) ? null : (DateTime?)DateTime.MinValue : DateTime.ParseExact(str, "G", CultureInfo.InvariantCulture);
         }
         public virtual char ReadChar()
         {
-            string str = ReadString();            
+            var str = ReadString();            
             if (str == null)
             {
                 return (char) 0;
@@ -87,31 +92,31 @@
         }
         public virtual object ReadEnum(Type type)
         {
-            return Enum.Parse(type, ReadInt64().ToString(), false);
+            return Enum.Parse(type, ReadInt64(false).ToString(), false);
         }
-        public virtual long ReadInt64()
+        public virtual long? ReadInt64(bool isNullable)
         {
-            string value = ReadNumericValue();
-            return value == null ? 0 : Convert.ToInt64(value);
+            var value = ReadNumericValue();
+            return value == null ? (isNullable ? null : (long?)0) : Convert.ToInt64(value);
         }
-        public virtual bool ReadBool()
+        public virtual bool? ReadBool(bool isNullable)
         {
-            string str = ReadNonStringValue('0');
-            if (str == null) return false;
+            var str = ReadNonStringValue('0');
+            if (str == null) return isNullable ? null : (bool?) false;
             if (str.Equals("true")) return true;
             if (str.Equals("false")) return false;
             throw new JsonException("Expecting true or false, but got " + str);
         }
 
-        public virtual float ReadFloat()
+        public virtual float? ReadFloat(bool isNullable)
         {
-            string value = ReadNumericValue();
-            return value == null ? 0 : Convert.ToSingle(value);
+            var value = ReadNumericValue();
+            return value == null ? (isNullable ? null : (float?)0) : Convert.ToSingle(value);
         }
-        public virtual short ReadInt16()
+        public virtual short? ReadInt16(bool isNullable)
         {
-            string value = ReadNumericValue();
-            return value == null ? (short)0 : Convert.ToInt16(value);
+            var value = ReadNumericValue();
+            return value == null ? (isNullable ? null : (short?)0) : Convert.ToInt16(value);
         }
         public virtual string ReadNumericValue()
         {
@@ -119,15 +124,15 @@
         }
         public virtual string ReadNonStringValue(char offset)
         {
-            StringBuilder sb = new StringBuilder(10);
+            var sb = new StringBuilder(10);
             while (true)
             {
-                char c = Peek();
+                var c = Peek();
                 if (IsDelimiter(c))
                 {
                     break;
                 }
-                int read = _reader.Read();
+                var read = _reader.Read();
                 if (read >= '0' && read <= '9')
                 {
                     sb.Append(read - offset);
@@ -137,7 +142,7 @@
                     sb.Append((char) read);
                 }                
             }
-            string str = sb.ToString();
+            var str = sb.ToString();
             return str == "null" ? null : str;
         }
         public virtual bool IsDelimiter(char c)
@@ -148,18 +153,18 @@
         {
             return char.IsWhiteSpace(c);
         }
-
+        
         public virtual char Peek()
         {
-            int c = _reader.Peek();
+            var c = _reader.Peek();
             return ValidateChar(c);
         }
         public virtual char Read()
         {
-            int c = _reader.Read();
+            var c = _reader.Read();
             return ValidateChar(c);
         }
-        private char ValidateChar(int c)
+        private static char ValidateChar(int c)
         {
             if (c == -1)
             {
@@ -190,18 +195,24 @@
                     throw new ArgumentException("Unrecognized escape character: " + c);
             }
         }
-
         protected internal virtual void AssertAndConsume(char character)
         {
-            char c = Read();
+            var c = Read();
             if (c != character)
             {
                 throw new JsonException(string.Format("Expected character '{0}', but got: '{1}'", character, c));
             }
         }
+        protected internal virtual void AssertAndConsumeNull()
+        {
+            if (Read() != 'n' || Read() != 'u' || Read() != 'l' || Read() != 'l')
+            {
+                throw new JsonException("Expected null");
+            }            
+        }
         protected internal bool AssertNextIsDelimiterOrSeparator(char endDelimiter)
         {
-            char delimiter = Read();
+            var delimiter = Read();
             if (delimiter == endDelimiter)
             {
                 return true;
@@ -220,14 +231,12 @@
         }
         private void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (_disposed) return;
+            if (disposing)
             {
-                if (disposing)
-                {
-                    _reader.Close();
-                }
-                _disposed = true;
+                _reader.Close();
             }
+            _disposed = true;
         }
     }
 }
