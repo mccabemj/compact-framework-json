@@ -53,8 +53,9 @@
                     continue;
                 }
                 if (isEscaped)
-                {
-                    sb.Append(FromEscaped(c));
+                {                    
+                    if (c == 'u') { sb.Append(HandleEscapedSequence()); }
+                    else { sb.Append(FromEscaped(c)); }                    
                     isEscaped = false;
                     continue;
                 }
@@ -172,7 +173,7 @@
             }
             return (char)c;
         }
-        
+
         public virtual string FromEscaped(char c)
         {
             switch (c)
@@ -181,6 +182,8 @@
                     return "\"";
                 case '\\':
                     return "\\";
+                case '/':
+                    return "/";
                 case 'b':
                     return "\b";
                 case 'f':
@@ -237,6 +240,25 @@
                 _reader.Close();
             }
             _disposed = true;
+        }
+
+        private char HandleEscapedSequence()
+        {
+            var sb = new StringBuilder();
+            for (var i = 0; i < 4; i++)
+            {
+                var c = Read();
+                if (!IsHexDigit(c))
+                {
+                    throw new JsonException(string.Format("Expected hex digit but got: '{0}'", c));
+                }
+                sb.Append(c);
+            }
+            return (char)int.Parse(sb.ToString(), NumberStyles.HexNumber);             
+        }
+        private static bool IsHexDigit(char x)
+        {
+            return (x >= '0' && x <= '9') || (x >= 'a' && x <= 'f') || (x >= 'A' && x <= 'F');
         }
     }
 }
