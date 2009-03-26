@@ -4,6 +4,7 @@
     using System.Globalization;
     using System.IO;
     using System.Text;
+    using Helpers;
 
     public class JsonReader : IDisposable
     {
@@ -75,8 +76,8 @@
         }
         public virtual DateTime? ReadDateTime(bool isNullable)
         {
-            var str = ReadString();
-            return str == null ? (isNullable) ? null : (DateTime?)DateTime.MinValue : DateTime.ParseExact(str, "G", CultureInfo.InvariantCulture);
+            var seconds = ReadInt32(true);
+            return seconds == null ? (isNullable) ? null : (DateTime?) DateTime.MinValue : DateHelper.FromUnixTime(seconds.Value);
         }
         public virtual char ReadChar()
         {

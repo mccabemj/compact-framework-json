@@ -5,6 +5,7 @@
     using System.Globalization;
     using System.IO;
     using System.Text;
+    using Helpers;
     
     public class JsonWriter : IDisposable 
     {
@@ -43,7 +44,7 @@
         }
         public virtual void WriteDate(DateTime date)
         {
-            WriteString(date.ToString("G", CultureInfo.InvariantCulture));
+            WriteRaw(DateHelper.ToUnixTime(date).ToString());            
         }
         public virtual void WriteKey(string key)
         {
