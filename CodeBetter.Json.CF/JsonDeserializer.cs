@@ -80,6 +80,10 @@
             {
                 return _reader.ReadFloat(isNullable);
             }
+            if (type == typeof(decimal))
+            {
+                return _reader.ReadDecimal(isNullable);
+            }
             if (type == typeof(short))
             {
                 return _reader.ReadInt16(isNullable);

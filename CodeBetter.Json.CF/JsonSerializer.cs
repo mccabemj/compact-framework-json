@@ -5,7 +5,7 @@
     using System.Reflection;
     using Helpers;
 
-    public delegate object PreFieldSerializingDelegate(string name, object value);
+    public delegate bool PreFieldSerializingDelegate(string name, ref object value);
     
     public class JsonSerializer
     {
@@ -47,7 +47,10 @@
         {
             if (_callback != null)
             {
-                value = _callback(name, value);
+                if (!_callback(name, ref value))
+                {
+                    return;
+                }
             }
             if (value == null)
             {
@@ -59,7 +62,7 @@
                 _writer.WriteString((string) value);
                 return;
             }
-            if (value is int || value is long || value is short || value is float || value is byte || value is sbyte || value is uint || value is ulong || value is ushort || value is double)
+            if (value is int || value is long || value is short || value is float || value is byte || value is sbyte || value is uint || value is ulong || value is ushort || value is double || value is decimal)
             {
                 _writer.WriteRaw(value.ToString());               
                 return;

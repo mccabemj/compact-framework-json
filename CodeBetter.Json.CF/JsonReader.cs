@@ -115,6 +115,11 @@
             var value = ReadNumericValue();
             return value == null ? (isNullable ? null : (float?)0) : Convert.ToSingle(value);
         }
+        public virtual decimal? ReadDecimal(bool isNullable)
+        {
+            var value = ReadNumericValue();
+            return value == null ? (isNullable ? null : (decimal?)0) : Convert.ToDecimal(value);
+        }
         public virtual short? ReadInt16(bool isNullable)
         {
             var value = ReadNumericValue();
