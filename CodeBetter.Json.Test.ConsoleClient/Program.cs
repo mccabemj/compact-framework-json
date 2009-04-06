@@ -19,13 +19,13 @@ namespace CodeBetter.Json.Test.Console
             Console.ReadLine();
         }
         
-        private static object ProcessValue(string name, object value)
+        private static bool ProcessValue(string name, ref object value)
         {
             if (string.Compare(name, "password") == 0)
             {
-                return "secret";
+                value = "secret";
             }
-            return value;
+            return true;
         }
     }
 
