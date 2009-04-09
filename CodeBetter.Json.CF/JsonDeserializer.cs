@@ -101,6 +101,7 @@
             _reader.SkipWhiteSpaces();            
             if (_reader.Peek() == JsonTokens.EndArrayCharacter)
             {
+                _reader.Read();
                 return container;
             }
             
