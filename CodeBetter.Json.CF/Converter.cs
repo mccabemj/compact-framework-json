@@ -86,7 +86,7 @@
         {
             using (var reader = new JsonReader(input))
             {
-                return JsonDeserializer.Deserialize<T>(reader);
+                return JsonDeserializer.Deserialize<T>(reader, fieldPrefix);
             }
         }
         public static T DeserializeFromFile<T>(string file)
@@ -97,7 +97,7 @@
         {
             using (var reader = new JsonReader(new FileStream(file, FileMode.Open, FileAccess.Read)))
             {
-                return JsonDeserializer.Deserialize<T>(reader);
+                return JsonDeserializer.Deserialize<T>(reader, fieldPrefix);
             }  
         }
         public static T Deserialize<T>(string json)
