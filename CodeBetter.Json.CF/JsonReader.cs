@@ -109,6 +109,34 @@
             if (str.Equals("false")) return false;
             throw new JsonException("Expecting true or false, but got " + str);
         }
+        public virtual object ReadObject()
+        {
+            if (Peek() == JsonTokens.StringDelimiter)
+            {
+                return ReadString();                
+            }
+            var value = ReadNumericValue();
+            if (value == null) return null;            
+            if (value.Equals("true")) return true;
+            if (value.Equals("false")) return false;
+            try
+            {
+                return int.Parse(value);
+            }
+            catch (Exception ex)
+            {
+                if (!(ex is FormatException) && !(ex is OverflowException)) { throw; }
+            }
+            try
+            {
+                return decimal.Parse(value);
+            }
+            catch (Exception ex)
+            {
+                if (!(ex is FormatException) && !(ex is OverflowException)) { throw; }
+            }
+            return value;
+        }
 
         public virtual float? ReadFloat(bool isNullable)
         {

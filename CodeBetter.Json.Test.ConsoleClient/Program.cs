@@ -1,11 +1,25 @@
 namespace CodeBetter.Json.Test.Console
 {
     using System;
+    using System.Collections.Generic;
 
     internal class Program
     {
         private static void Main(string[] args)
-        {            
+        {
+
+            var data = new CategoryData
+                           {
+                               process = "process",
+                               items = new List<object[]>
+                                           {
+                                               new object[]{"str1", 1, 2.2, true, null},
+                                               new object[]{"str2", 8, 0, false},                                               
+                                           }
+                           };
+
+            var x = Converter.Serialize(data);
+            var y = Converter.Deserialize<CategoryData>(x);
             var json = Converter.Serialize(new User("name", "password", AccountStatus.Disabled), "_", ProcessValue);
             Converter.Serialize("out.txt", new[] { 1, 2, 3, -4 }, "_");
             Console.WriteLine(json);
@@ -118,5 +132,12 @@ namespace CodeBetter.Json.Test.Console
     {
         Enabled = 1,
         Disabled = 2,
+    }
+
+
+    public class CategoryData
+    {
+        public List<object[]> items = new List<object[]>();
+        public string process = "";
     }
 }

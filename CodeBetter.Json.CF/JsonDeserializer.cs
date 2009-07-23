@@ -87,7 +87,11 @@
             if (type == typeof(short))
             {
                 return _reader.ReadInt16(isNullable);
-            }            
+            }     
+            if (type == typeof(object))
+            {
+                return _reader.ReadObject();
+            }
             return ParseObject(type);            
         }
         private object DeserializeList(Type listType)
