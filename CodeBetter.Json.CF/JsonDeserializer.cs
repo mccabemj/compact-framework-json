@@ -28,9 +28,7 @@
         {
             return (T) new JsonDeserializer(reader, fieldPrefix).DeserializeValue(typeof(T));
         }
-
-        
-
+       
         private object DeserializeValue(Type type)
         {
             _reader.SkipWhiteSpaces();
@@ -97,6 +95,11 @@
         private object DeserializeList(Type listType)
         {
             _reader.SkipWhiteSpaces();
+            if (_reader.Peek() != JsonTokens.StartArrayCharacter)
+            {
+                _reader.AssertAndConsumeNull();
+                return null;
+            }
             _reader.AssertAndConsume(JsonTokens.StartArrayCharacter);            
             var itemType = ListHelper.GetListItemType(listType);
             bool isReadonly;
@@ -131,6 +134,11 @@
         }
         private object ParseObject(Type type)
         {           
+            if (_reader.Peek() != JsonTokens.StartObjectLiteralCharacter)
+            {
+                _reader.AssertAndConsumeNull();
+                return null;
+            }
             _reader.AssertAndConsume(JsonTokens.StartObjectLiteralCharacter);
             var constructor = ReflectionHelper.GetDefaultConstructor(type);
             var instance = constructor.Invoke(null);
