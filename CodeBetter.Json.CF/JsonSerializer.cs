@@ -67,6 +67,11 @@
                 _writer.WriteRaw(value.ToString());               
                 return;
             }
+            if (value is Enum)
+            {
+                _writer.WriteRaw(((Enum)value).ToString("d"));
+                return;
+            }
             if (value is char)
             {
                 _writer.WriteChar((char) value);                
