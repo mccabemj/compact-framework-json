@@ -9,9 +9,15 @@ namespace CodeBetter.Json.Helpers
         private readonly static Type _includeBaseAttributeType = typeof (SerializeIncludingBaseAttribute);
         private static readonly Type _nonSerializableAttributeType = typeof(NonSerializedAttribute);
         private static readonly Type _nullableType = typeof (Nullable<>);
+        private static readonly IDictionary<Type, IList<FieldInfo>> _typeFields = new Dictionary<Type, IList<FieldInfo>>();
 
-        public static List<FieldInfo> GetSerializableFields(Type type)
+        public static IList<FieldInfo> GetSerializableFields(Type type)
         {
+            if (_typeFields.ContainsKey(type))
+            {
+                return _typeFields[type];
+            }
+            
             var fields = new List<FieldInfo>(10);
             fields.AddRange(type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly));
             RemoveNonSerializableFields(fields);
@@ -19,6 +25,7 @@ namespace CodeBetter.Json.Helpers
             {
                 fields.AddRange(GetSerializableFields(type.BaseType));
             }
+            _typeFields[type] = fields;
             return fields;
         }
 
