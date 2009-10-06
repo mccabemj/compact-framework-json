@@ -33,9 +33,13 @@ namespace CodeBetter.Json.Helpers
             }
         }
 
-        public static bool ShouldSerializeField(ICustomAttributeProvider field)
+        public static bool ShouldSerializeField(FieldInfo field)
         {
-            return field.GetCustomAttributes(_nonSerializableAttributeType, true).Length <= 0;
+            if (field.GetCustomAttributes(_nonSerializableAttributeType, true).Length > 0)
+            {
+                return false;
+            }
+            return (field.Attributes & FieldAttributes.NotSerialized) != FieldAttributes.NotSerialized;
         }
 
         public static FieldInfo FindField(Type type, string name)
